@@ -60,7 +60,7 @@ df = df.set_index('DateTime')
 
 df.to_csv('GasProduction.csv', index = True)
 
-
+# You must change document location
 files_path = r"/Users/toygar/Documents/PYTHON Examples/NYKEnergy/Santral_Production"
 
 files = ['GasProduction.csv']
@@ -69,7 +69,6 @@ files = ['GasProduction.csv']
 dfs = []
 for file in files:
     dfs.append(pd.read_csv(os.path.join(files_path,file), header=0, index_col=0, parse_dates=True))
-
 
 
 df = pd.concat(dfs).sort_index()
@@ -83,9 +82,6 @@ def seag(ts):
     seag = ts.groupby([ts.index.dayofyear, ts.index.year]).first().unstack()
     return seag
 
-
-
-
 def plot_seag(seag, title=""):
     plt.figure(figsize=(8,5))
     plt.fill_between(
@@ -98,41 +94,8 @@ def plot_seag(seag, title=""):
     plt.xlim(seag.index.min(), seag.index.max())
     plt.ylabel('MWh')
     plt.xlabel('Months')
-#    plt.savefig('{}PRODUCTION365.png'.format(col))
     plt.show()
-
 
 for col in df.columns:
     df_seag = seag(df[col].resample("D").mean()[:today-timedelta(days=1)].rolling(7).mean())
     plot_seag(df_seag, "{} 7 Day Rolling Production".format(col))
-
-#%% EXPORTING PDF
-
-x = pd.read_csv('GasProduction.csv')
-
-x.tail(24).to_excel('santrallergas.xlsx')
-
-yesterday = date.today() - timedelta(days=1)
-yesterday.strftime('%d%m%y')
-
-fig, ax =plt.subplots(figsize=(12,4))
-ax.axis('off')
-the_table = ax.table(cellText=x[x.columns[0:8]].tail(24).values,colLabels=x.columns[0:8],loc='center',fontsize=20)
-pp = PdfPages("Gas1_Uretim.pdf")
-pp.savefig(fig, bbox_inches='tight')
-pp.close()
-
-fig, ax =plt.subplots(figsize=(12,4))
-ax.axis('off')
-the_table = ax.table(cellText=x[x.columns[8:16]].tail(24).values,colLabels=x.columns[8:16],loc='center',fontsize=20)
-pp = PdfPages("Gas2_Uretim.pdf")
-pp.savefig(fig, bbox_inches='tight')
-pp.close()
-
-fig, ax =plt.subplots(figsize=(12,4))
-ax.axis('off')
-the_table = ax.table(cellText=x[x.columns[16:23]].tail(24).values,colLabels=x.columns[16:23],loc='center',fontsize=20)
-pp = PdfPages("Gas3_Uretim.pdf")
-pp.savefig(fig, bbox_inches='tight')
-pp.close()
-
