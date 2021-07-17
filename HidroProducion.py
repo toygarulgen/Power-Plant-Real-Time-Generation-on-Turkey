@@ -62,7 +62,7 @@ df = df.set_index('DateTime')
 
 df.to_csv('HidroProduction.csv', index = True)
 
-
+# You must change document location
 files_path = r"/Users/toygar/Documents/PYTHON Examples/NYKEnergy/Santral_Production"
 
 files = ['HidroProduction.csv']
@@ -92,38 +92,9 @@ def plot_seag(seag, title=""):
     plt.xlim(seag.index.min(), seag.index.max())
     plt.ylabel('MWh')
     plt.xlabel('Months')
-#    plt.savefig('{}PRODUCTION365.png'.format(col))
     plt.show()
 
 for col in df.columns:
     df_seag = seag(df[col].resample("D").mean()[:today-timedelta(days=1)].rolling(7).mean())
     plot_seag(df_seag, "{} 7 Day Rolling Production".format(col))
-
-
-
-#%% EXPORTING PDF
-
-x = pd.read_csv('HidroProduction.csv')
-
-x.tail(24).to_excel('santrallerhidro.xlsx')
-
-yesterday = date.today() - timedelta(days=1)
-yesterday.strftime('%d%m%y')
-
-fig, ax =plt.subplots(figsize=(12,4))
-#ax.axis('tight')
-ax.axis('off')
-the_table = ax.table(cellText=x[x.columns[0:10]].tail(24).values,colLabels=x.columns[0:10],loc='center',fontsize=20)
-pp = PdfPages("Hydro1_Uretim.pdf")
-pp.savefig(fig, bbox_inches='tight')
-pp.close()
-
-fig, ax =plt.subplots(figsize=(12,4))
-#ax.axis('tight')
-ax.axis('off')
-the_table = ax.table(cellText=x[x.columns[10:21]].tail(24).values,colLabels=x.columns[10:21],loc='center',fontsize=20)
-pp = PdfPages("Hydro2_Uretim.pdf")
-pp.savefig(fig, bbox_inches='tight')
-pp.close()
-
 
